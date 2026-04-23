@@ -5,10 +5,12 @@ buttons.forEach((button) => {
   button.addEventListener("click", onButtonClick);
 });
 
-let firstNum = '';
-let secondNum = 0;
-let operand = "/";
-let total = 0
+const data = {
+  firstNum: "",
+  secondNum: 0,
+  operand: "/",
+  total: 0,
+};
 
 function operate(firstNum, operand, secondNum) {
   console.log(operand === "+");
@@ -23,6 +25,38 @@ function operate(firstNum, operand, secondNum) {
   }
   if (operand === "/") {
     return divide(firstNum, secondNum);
+  }
+}
+
+function upDateScreen(value) {
+  screen.textContent += value;
+  firstNum = value;
+}
+
+function updateVariables(num) {
+  if (num == "C") {
+    firstNum = "";
+    console.log(firstNum);
+    return;
+  }
+  firstNum += num;
+  console.log(firstNum);
+}
+
+function clearScreen() {
+  screen.textContent = 0;
+}
+
+function onButtonClick(e) {
+  if (screen.textContent == 0) {
+    screen.textContent = "";
+  }
+  const value = e.target.textContent;
+  upDateScreen(value);
+
+  if (e.target.textContent == "C") {
+    clearScreen();
+    updateVariables(e.target.textContent);
   }
 }
 
@@ -41,36 +75,3 @@ function multiply(a, b) {
 function divide(a, b) {
   return a / b;
 }
-
-function upDateScreen(value) {
-  screen.textContent += value;
-  firstNum = value
-}
-
-function updateVariables (num) {
-    if(num == 'C') {
-        firstNum = ''
-        console.log(firstNum)
-        return
-    }
-    firstNum += num
-    console.log(firstNum)
-}
-
-function clearScreen() {
-  screen.textContent = 0;
-}
-
-function onButtonClick(e) {
-  if (screen.textContent == 0) {
-    screen.textContent = "";
-  }
-  const value = e.target.textContent;
-  upDateScreen(value);
-
-  if (e.target.textContent == "C") {
-    clearScreen();
-    updateVariables(e.target.textContent)
-  }
-}
-
