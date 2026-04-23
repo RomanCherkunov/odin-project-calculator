@@ -5,9 +5,10 @@ buttons.forEach((button) => {
   button.addEventListener("click", onButtonClick);
 });
 
-const firstNum = 6;
-const secondNum = 3;
-const operand = "/";
+let firstNum = '';
+let secondNum = 0;
+let operand = "/";
+let total = 0
 
 function operate(firstNum, operand, secondNum) {
   console.log(operand === "+");
@@ -43,6 +44,17 @@ function divide(a, b) {
 
 function upDateScreen(value) {
   screen.textContent += value;
+  firstNum = value
+}
+
+function updateVariables (num) {
+    if(num == 'C') {
+        firstNum = ''
+        console.log(firstNum)
+        return
+    }
+    firstNum += num
+    console.log(firstNum)
 }
 
 function clearScreen() {
@@ -58,7 +70,7 @@ function onButtonClick(e) {
 
   if (e.target.textContent == "C") {
     clearScreen();
+    updateVariables(e.target.textContent)
   }
 }
 
-console.log(operate(firstNum, operand, secondNum));
