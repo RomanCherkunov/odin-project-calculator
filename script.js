@@ -1,111 +1,164 @@
-const screen = document.querySelector(".screen p");
-const buttons = Array.from(document.querySelectorAll(".btn"));
-
-buttons.forEach((button) => {
-  button.addEventListener("click", onButtonClick);
-});
-
-let data = {
-  firstNum: "",
-  secondNum: 0,
-  operand: "",
-  total: 0,
-  numberCount: 1,
-  operandsArr: ["+", "-", "*", "/"],
-};
-
-function operate(firstNum, operand, secondNum) {
-  if (operand === "+") {
-    return sum(firstNum, secondNum);
-  }
-  if (operand === "-") {
-    return subtract(firstNum, secondNum);
-  }
-  if (operand === "*") {
-    return multiply(firstNum, secondNum);
-  }
-  if (operand === "/") {
-    return divide(firstNum, secondNum);
-  }
-}
-
-function onButtonClick(e) {
-  const value = e.target.textContent;
-
-  if (value == "C") {
-    clearScreen();
-    data = resetData();
-    console.log(data)
-    return;
-  }
-
-  if( value == '=') {
-    data.firstNum = parseFloat(data.firstNum)
-    data.secondNum = parseFloat(data.secondNum)
-    data.total = operate(data.firstNum, data.operand, data.secondNum)
-    screen.textContent = data.total
-    console.log(data)
-    return
-  }
-
-  if (data.operandsArr.some((el) => value.includes(el))) {
-    data.numberCount += 1;
-    data.operand = value
-    console.log(data);
-    clearScreen();
-    return;
-  }
-
-  updateData(value);
-  updateScreen();
-  console.log(data);
-}
-
-function updateData(value) {
-  if (data.numberCount == 2) {
-    data.secondNum += value;
-    return;
-  }
-  data.firstNum += value;
-}
-
-function updateScreen() {
-  if (data.numberCount == 2) {
-    screen.textContent = data.secondNum;
-    return;
-  }
-  screen.textContent = data.firstNum;
-}
-
-function clearScreen() {
-  data.secondNum = "";
-  screen.textContent = 0;
-}
-
-function resetData() {
-  return {
-    ...data,
-    firstNum: "",
-    secondNum: 0,
-    operand: "",
-    total: 0,
-    numberCount: 1,
-    operandsArr: ["+", "-", "*", "/"],
-  };
-}
-
-function sum(a, b) {
-  return a + b;
+function add(a, b) {
+    return a + b;
 }
 
 function subtract(a, b) {
-  return a - b;
+    return a - b;
 }
 
 function multiply(a, b) {
-  return a * b;
+    return a * b;
 }
 
-function divide(a, b) {
-  return a / b;
+function divide (a, b) {
+    return a / b;
 }
+
+function operate(operator, a, b) {
+    if (operator === '÷' && b === 0) return 'ERROR';
+
+    const calculation = {
+        '+': add,
+        '-': subtract,
+        'x': multiply,
+        '÷': divide
+    }
+
+
+    return calculation[operator](a, b);
+}
+
+let firstNumber = null;
+let operator = null;
+let secondNumber = null;
+let currentInput = ''; 
+let shouldResetDisplay = false;
+
+const historyDisplay = document.getElementById('history');
+const display = document.getElementById('display');
+const numberButtons = document.querySelectorAll('.number');
+const dotButton = document.querySelector('.dot');
+const operatorButtons = document.querySelectorAll('.operator');
+const equalButton = document.querySelector('.equal')
+const clearButton = document.querySelector('.clear');
+const deleteButton = document.querySelector('.delete')
+
+numberButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        if (shouldResetDisplay) {
+            firstNumber = null;
+            operator = null;
+            secondNumber = null;
+            currentInput = '';
+            historyDisplay.textContent = ''
+            shouldResetDisplay = false
+        }
+
+        currentInput += button.textContent;
+
+        if (firstNumber !== null && operator) {
+            display.textContent = `${firstNumber} ${operator} ${currentInput}`
+        } else {
+            display.textContent = currentInput;
+        }
+
+    });
+});
+
+dotButton.addEventListener('click', () => {
+    if(shouldResetDisplay) {
+        currentInput = '';
+        shouldResetDisplay = false;
+    }
+
+    if (currentInput.includes('.')) return;
+
+    if (currentInput === '') {
+        currentInput = '0.'
+    } else {
+        currentInput += '.'
+    }
+
+    display.textContent = currentInput;
+
+    if (firstNumber !== null && operator) {
+            display.textContent = `${firstNumber} ${operator} ${currentInput}`
+        }
+
+})
+
+operatorButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    if (currentInput === '' && firstNumber !== null) {
+        operator = button.textContent;
+        display.textContent = `${firstNumber} ${operator}`;
+        shouldResetDisplay = false;
+        return;
+    }
+
+    if (firstNumber === null) {
+      firstNumber = Number(currentInput);
+    } 
+
+    if (operator && currentInput !== '') {
+        secondNumber = Number(currentInput);
+        historyDisplay.textContent = `${firstNumber} ${operator} ${secondNumber} =`
+        firstNumber = operate(operator, firstNumber, secondNumber);
+    }
+
+    operator = button.textContent;
+    currentInput = '';
+
+    display.textContent = `${firstNumber} ${operator}`;
+    shouldResetDisplay = false;
+
+  });
+});
+
+equalButton.addEventListener('click', () => {
+    if (firstNumber === null || operator === null || currentInput === '') return;
+
+    secondNumber = Number(currentInput);
+
+    const result = operate(operator, firstNumber, secondNumber);
+
+    if (!shouldResetDisplay){
+        historyDisplay.textContent = `${firstNumber} ${operator} ${secondNumber} = `
+    }
+    display.textContent = `${result}`;
+
+    firstNumber = result;
+    operator = null;
+    currentInput = '';
+    shouldResetDisplay = true;
+
+})
+
+deleteButton.addEventListener('click', () => {
+    if (shouldResetDisplay) return;
+    
+    currentInput = currentInput.slice(0, -1);
+
+    if (currentInput === '' && firstNumber === null && operator === null) {
+        display.textContent = '0';
+    }
+    
+    display.textContent = currentInput;
+    
+    if (firstNumber !== null && operator) {
+        display.textContent = `${firstNumber} ${operator} ${currentInput}`
+    }
+    
+    if (currentInput === '') return;
+})
+
+clearButton.addEventListener('click', () => {
+    firstNumber = null;
+    operator = null;
+    secondNumber = null;
+    currentInput = ''; 
+    shouldResetDisplay = false;
+
+    display.textContent = 0
+    historyDisplay.textContent = ''
+})
