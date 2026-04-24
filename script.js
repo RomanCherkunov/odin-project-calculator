@@ -5,15 +5,16 @@ buttons.forEach((button) => {
   button.addEventListener("click", onButtonClick);
 });
 
-const data = {
+let data = {
   firstNum: "",
   secondNum: 0,
-  operand: "/",
+  operand: "",
   total: 0,
+  numberCount: 1,
+  operandsArr: ["+", "-", "*", "/"],
 };
 
 function operate(firstNum, operand, secondNum) {
-  console.log(operand === "+");
   if (operand === "+") {
     return sum(firstNum, secondNum);
   }
@@ -28,36 +29,69 @@ function operate(firstNum, operand, secondNum) {
   }
 }
 
-function upDateScreen(value) {
-  screen.textContent += value;
-  firstNum = value;
-}
+function onButtonClick(e) {
+  const value = e.target.textContent;
 
-function updateVariables(num) {
-  if (num == "C") {
-    firstNum = "";
-    console.log(firstNum);
+  if (value == "C") {
+    clearScreen();
+    data = resetData();
+    console.log(data)
     return;
   }
-  firstNum += num;
-  console.log(firstNum);
+
+  if( value == '=') {
+    data.firstNum = parseFloat(data.firstNum)
+    data.secondNum = parseFloat(data.secondNum)
+    data.total = operate(data.firstNum, data.operand, data.secondNum)
+    screen.textContent = data.total
+    console.log(data)
+    return
+  }
+
+  if (data.operandsArr.some((el) => value.includes(el))) {
+    data.numberCount += 1;
+    data.operand = value
+    console.log(data);
+    clearScreen();
+    return;
+  }
+
+  updateData(value);
+  updateScreen();
+  console.log(data);
+}
+
+function updateData(value) {
+  if (data.numberCount == 2) {
+    data.secondNum += value;
+    return;
+  }
+  data.firstNum += value;
+}
+
+function updateScreen() {
+  if (data.numberCount == 2) {
+    screen.textContent = data.secondNum;
+    return;
+  }
+  screen.textContent = data.firstNum;
 }
 
 function clearScreen() {
+  data.secondNum = "";
   screen.textContent = 0;
 }
 
-function onButtonClick(e) {
-  if (screen.textContent == 0) {
-    screen.textContent = "";
-  }
-  const value = e.target.textContent;
-  upDateScreen(value);
-
-  if (e.target.textContent == "C") {
-    clearScreen();
-    updateVariables(e.target.textContent);
-  }
+function resetData() {
+  return {
+    ...data,
+    firstNum: "",
+    secondNum: 0,
+    operand: "",
+    total: 0,
+    numberCount: 1,
+    operandsArr: ["+", "-", "*", "/"],
+  };
 }
 
 function sum(a, b) {
