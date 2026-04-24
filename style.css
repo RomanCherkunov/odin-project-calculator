@@ -128,6 +128,7 @@ button:active {
 .equal {
     background: #1dd1a1;
     color: white;
+    flex-grow: 4.5;
 }
 
 .equal:hover {
@@ -138,6 +139,7 @@ button:active {
 .clear {
     background: #ee5253;
     color: white;
+    flex-grow: 4;
 }
 
 .clear:hover {
@@ -148,6 +150,7 @@ button:active {
 .delete {
     background: #576574;
     color: white;
+    flex-grow: 0.2;
 }
 
 .delete:hover {
